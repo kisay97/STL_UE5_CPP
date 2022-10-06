@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Kismet/KismetMathLibrary.h"
 #include "STLCppCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "STLAnimInstance.h"
 
 // Sets default values
 ASTLCppCharacter::ASTLCppCharacter()
@@ -56,7 +57,35 @@ ASTLCppCharacter::ASTLCppCharacter()
 	{
 		GetMesh()->SetAnimInstanceClass(SM_AnimInstance.Class);
 	}
+
+	//점프 좀 늘리기(800)
+	GetCharacterMovement()->JumpZVelocity = 800.f;
+
+	//2단 점프 해볼까?
+	JumpMaxCount = 2;
 	// -- 애님 블프 세팅 끝
+
+	bIsAttacking = false;
+	MaxCombo = 4;
+	CurrentCombo = 0;
+}
+
+void ASTLCppCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	StlAnim = Cast<USTLAnimInstance>(GetMesh()->GetAnimInstance());
+	check(StlAnim != nullptr); //false일 경우 assert
+
+	StlAnim->OnMontageEnded.AddDynamic(this, &ASTLCppCharacter::OnAttackMontageEnded);
+	StlAnim->OnNextAttackCheck.AddLambda([this]()->void {
+		bCanNextCombo = false;
+		if (bIsComboInput)
+		{
+			AttackStartCombo();
+			StlAnim->JumpToAttackMontageSection(CurrentCombo);
+		}
+	});
 }
 
 // Called when the game starts or when spawned
@@ -87,6 +116,7 @@ void ASTLCppCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	//액션입력 바인딩?
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ASTLCppCharacter::Attack);
 }
 
 //Get Control Rotation return value z->Get Forward Vector in rot z
@@ -110,4 +140,45 @@ void ASTLCppCharacter::LookUp(float axis)
 void ASTLCppCharacter::Turn(float axis)
 {
 	AddControllerYawInput(axis);
+}
+
+void ASTLCppCharacter::Attack()
+{
+	//UE_LOG(LogTemp, Log, TEXT("LOG_ATTACK"));
+	//StlAnim->PlayAttackMontage();
+
+	if (bIsAttacking)
+	{
+		if (bCanNextCombo)
+		{
+			bIsComboInput = true;
+		}
+	}
+	else
+	{
+		AttackStartCombo();
+		StlAnim->PlayAttackMontage();
+		StlAnim->JumpToAttackMontageSection(CurrentCombo);
+		bIsAttacking = true;
+	}
+}
+
+void ASTLCppCharacter::AttackStartCombo()
+{
+	bCanNextCombo = true;
+	bIsComboInput = false;
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo+1, 1, MaxCombo);
+}
+
+void ASTLCppCharacter::AttackEndCombo()
+{
+	bCanNextCombo = false;
+	bIsComboInput = false;
+	CurrentCombo = 0;
+}
+
+void ASTLCppCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	bIsAttacking = false;
+	AttackEndCombo();
 }

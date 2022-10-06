@@ -22,14 +22,25 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY()
+	class USTLAnimInstance* StlAnim;
 
 	void MoveForward(float axis);
 	void MoveRight(float axis);
 	void LookUp(float axis);
 	void Turn(float axis);
+	void Attack();
+
+	void AttackStartCombo();
+	void AttackEndCombo();
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -37,4 +48,16 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool bIsAttacking;
+	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool bCanNextCombo;
+	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool bIsComboInput;
+	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentCombo;
+	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 MaxCombo;
 };
