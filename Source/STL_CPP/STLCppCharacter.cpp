@@ -2,7 +2,9 @@
 
 #include "STLCppCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "STLAnimInstance.h"
+#include "Weapon.h"
 
 // Sets default values
 ASTLCppCharacter::ASTLCppCharacter()
@@ -100,6 +102,10 @@ void ASTLCppCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bIsAttacking)
+	{
+		
+	}
 }
 
 // Called to bind functionality to input
@@ -181,4 +187,27 @@ void ASTLCppCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 {
 	bIsAttacking = false;
 	AttackEndCombo();
+}
+
+void ASTLCppCharacter::AddWeaponToCharacter(AActor* weapon)
+{
+	CurrentWeapon = Cast<AWeapon>(weapon);
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->SetActorEnableCollision(false);
+		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Weapon"));
+		CurrentWeapon->SetOwner(this);
+	}
+}
+
+bool ASTLCppCharacter::CanGetWeapon()
+{
+	if (!CurrentWeapon)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

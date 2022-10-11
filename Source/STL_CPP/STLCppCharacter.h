@@ -42,12 +42,21 @@ public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+	UFUNCTION()
+	void AddWeaponToCharacter(AActor* weapon);
+
+	UFUNCTION()
+	bool CanGetWeapon();
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	class AWeapon* CurrentWeapon;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
