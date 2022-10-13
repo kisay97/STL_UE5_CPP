@@ -38,6 +38,7 @@ public:
 
 	void AttackStartCombo();
 	void AttackEndCombo();
+	void AttackCheck();
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -58,6 +59,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	class AWeapon* CurrentWeapon;
 
+	UPROPERTY(VisibleAnywhere, Category = Attack)
+	bool bIsAttackCheck;
+
+	UPROPERTY()
+	TArray<AActor*> HittedActor;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool bIsAttacking;
@@ -69,4 +76,6 @@ private:
 	int32 CurrentCombo;
 	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
+	UPROPERTY(VisibleAnywhere, Category = Attack, Meta = (AllowPrivateAccess = true))
+	float damage = 10.f;
 };

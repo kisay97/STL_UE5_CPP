@@ -3,8 +3,10 @@
 #include "STLCppCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "STLAnimInstance.h"
 #include "Weapon.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASTLCppCharacter::ASTLCppCharacter()
@@ -68,8 +70,11 @@ ASTLCppCharacter::ASTLCppCharacter()
 	// -- 애님 블프 세팅 끝
 
 	bIsAttacking = false;
+	bIsAttackCheck = false;
 	MaxCombo = 4;
 	CurrentCombo = 0;
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("StlCharacter"));
 }
 
 void ASTLCppCharacter::PostInitializeComponents()
@@ -102,9 +107,9 @@ void ASTLCppCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsAttacking)
+	if (bIsAttackCheck)
 	{
-		
+		AttackCheck();
 	}
 }
 
@@ -210,4 +215,49 @@ bool ASTLCppCharacter::CanGetWeapon()
 	{
 		return false;
 	}
+}
+
+void ASTLCppCharacter::AttackCheck()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ASTLCppCharacter::AttackCheck()"));
+
+	TArray<FHitResult> results;
+	FVector AttackStart = GetMesh()->GetSocketLocation(FName(TEXT("Attack_Start")));
+	FVector AttackEnd = GetMesh()->GetSocketLocation(FName(TEXT("Attack_End")));
+	
+	// 월드를 쓰는법
+	/*bool bIsAnyHitted = GetWorld()->LineTraceMultiByChannel(results,
+		AttackStart,
+		AttackEnd,
+		ECollisionChannel::ECC_GameTraceChannel1);
+	DrawDebugLine(GetWorld(),
+		AttackStart,
+		AttackEnd,
+		FColor::Red,
+		false, 1.0f, 0U, 2.f);*/
+
+	// 키즈멧 시스템 라이브러리를 쓰는법
+	bool bIsAnyHitted = UKismetSystemLibrary::SphereTraceMulti(GetWorld(),
+		AttackStart, AttackEnd, 25.f,
+		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1), //ECollisionChannel을 받는게 아니라 ETraceTypeQuery를 받으므로 UEngineTypes::ConvertToTraceType를 사용하여 변환해준다.
+		false, HittedActor, EDrawDebugTrace::ForDuration, results, true);
+	
+	if (bIsAnyHitted)
+	{
+		for (const auto& result : results) //코테 반복문때 이런거 해줘야 타임아웃 안걸리기에 좋음
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, 
+				FColor::Cyan, 
+				FString::Printf(TEXT("Hit: %s"), *result.GetActor()->GetName()));
+			auto hitActor = result.GetActor();
+			int32 bHitted = HittedActor.AddUnique(hitActor);
+			if (bHitted)
+			{
+				UGameplayStatics::ApplyDamage(hitActor, damage, 
+					UGameplayStatics::GetPlayerController(GetWorld(), 0), 
+					this, nullptr);
+			}
+		}
+	}
+
 }
