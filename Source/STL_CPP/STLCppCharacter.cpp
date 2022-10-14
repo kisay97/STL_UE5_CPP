@@ -7,6 +7,7 @@
 #include "STLAnimInstance.h"
 #include "Weapon.h"
 #include "DrawDebugHelpers.h"
+#include "STLCharacterStatComponent.h"
 
 // Sets default values
 ASTLCppCharacter::ASTLCppCharacter()
@@ -75,6 +76,8 @@ ASTLCppCharacter::ASTLCppCharacter()
 	CurrentCombo = 0;
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("StlCharacter"));
+
+	CharacterStat = CreateDefaultSubobject<USTLCharacterStatComponent>(TEXT("CharacterStat"));
 }
 
 void ASTLCppCharacter::PostInitializeComponents()
@@ -253,7 +256,7 @@ void ASTLCppCharacter::AttackCheck()
 			int32 bHitted = HittedActor.AddUnique(hitActor);
 			if (bHitted)
 			{
-				UGameplayStatics::ApplyDamage(hitActor, damage, 
+				UGameplayStatics::ApplyDamage(hitActor, CharacterStat->GetCharacterAttackDamage(), 
 					UGameplayStatics::GetPlayerController(GetWorld(), 0), 
 					this, nullptr);
 			}

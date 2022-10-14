@@ -16,14 +16,17 @@ public:
 	// Sets default values for this component's properties
 	USTLCharacterStatComponent();
 
+	void SetNewLevel(int32 NewLevel);
+	float GetCharacterAttackDamage();
+	void SetCurrentHpByDamage(float NewDamage);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void InitializeComponent() override;
 
 private:
-	//UPROPERTY()
-	//struct FSTLCharacterData* CurrentStat = nullptr;
+	struct FSTLCharacterData* CurrentStat = nullptr;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess))
 	int32 Level;
