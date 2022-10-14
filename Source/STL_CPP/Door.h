@@ -34,10 +34,15 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Collision;
 
+	UPROPERTY(VisibleAnywhere, Category = Move)
 	float dir;
+	UPROPERTY(VisibleAnywhere, Category = Move)
 	float currentYaw;
+	UPROPERTY(VisibleAnywhere, Category = Move)
 	float targetYaw;
+	UPROPERTY(VisibleAnywhere, Category = Move)
 	float tempAlpha = 0.0f;
+	UPROPERTY(VisibleAnywhere, Category = Move)
 	bool bIsOpenning = false;
 
 private:

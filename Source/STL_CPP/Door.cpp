@@ -45,7 +45,7 @@ void ADoor::Tick(float DeltaTime)
 	{
 		if (tempAlpha < 1)
 		{
-			tempAlpha = FMath::Clamp(0, 1, tempAlpha+DeltaTime);
+			tempAlpha = FMath::Clamp(tempAlpha + DeltaTime, 0, 1);
 			openDynamicGate(tempAlpha);
 		}
 	}
@@ -53,7 +53,7 @@ void ADoor::Tick(float DeltaTime)
 	{
 		if (tempAlpha > 0)
 		{
-			tempAlpha = FMath::Clamp(0, 1, tempAlpha - DeltaTime);
+			tempAlpha = FMath::Clamp(tempAlpha - DeltaTime, 0, 1);
 			closeDynamicGate(tempAlpha);
 		}
 	}
@@ -75,6 +75,7 @@ void ADoor::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	const auto player = Cast<ASTLCppCharacter>(OtherActor);
 	if (player)
 	{
+		checkDir();
 		currentYaw = Body->GetRelativeRotation().Yaw;
 		targetYaw = 90.0f;
 		tempAlpha = 0.0f;
@@ -105,11 +106,11 @@ void ADoor::checkDir()
 	float angleWithPlayer = base.Dot(GetActorForwardVector());
 	if (angleWithPlayer >= 0)
 	{
-		dir = 1.0f;
+		dir = -1.0f;
 	}
 	else
 	{
-		dir = -1.0f;
+		dir = 1.0f;
 	}
 }
 
