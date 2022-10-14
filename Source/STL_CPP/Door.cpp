@@ -12,16 +12,20 @@ ADoor::ADoor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//기본 컴포넌트 생성
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SM_Gate"));
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 
+	//컴포넌트 계층구조 지정
 	Body->SetupAttachment(RootComponent);
 	Collision->SetupAttachment(RootComponent);
 
+	//박스콜리전 위치 지정
 	Collision->SetRelativeLocation(FVector(0.f, 80.f, 40.f));
 	Collision->SetBoxExtent(FVector(100.f, 80.f, 40.f));
 
+	//문 메시 지정
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Body(TEXT("/Game/StaticMesh/SM_GATE.SM_GATE"));
 	if (SM_Body.Succeeded())
 	{
