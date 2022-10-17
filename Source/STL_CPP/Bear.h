@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Bear.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndedDelegate);
+
 UCLASS()
 class STL_CPP_API ABear : public ACharacter
 {
@@ -28,15 +30,28 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+	void SetTarget(APawn* Pawn);
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 	UPROPERTY(VisibleAnywhere)
 	float CurrentHP;
 
 	UPROPERTY(VisibleAnywhere)
 	float MaxHP;
 
+	FOnAttackEndedDelegate OnAttackEnded;
+
 public:
 	UPROPERTY()
 	class UAnimInstanceBear* AnimInstance;
 
+	UPROPERTY(VisibleAnywhere)
+	class UPawnSensingComponent* PawnSensing;
+
 private:
+	UPROPERTY()
+	APawn* TargetPawn;
 };

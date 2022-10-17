@@ -3,6 +3,8 @@
 
 #include "Bear.h"
 #include "AnimInstanceBear.h"
+#include "BearAIController.h"
+#include "Perception/PawnSensingComponent.h"
 
 // Sets default values
 ABear::ABear()
@@ -11,6 +13,7 @@ ABear::ABear()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CurrentHP = MaxHP = 100.f;
+	GetCharacterMovement()->MaxWalkSpeed = 150.f;
 
 	// Ä¸½¶ ¼³Á¤
 	GetCapsuleComponent()->SetCapsuleRadius(88.f);
@@ -31,6 +34,15 @@ ABear::ABear()
 	{
 		GetMesh()->SetAnimInstanceClass(CF_AnimInstance.Class);
 	}
+
+	// °õ AI ÄÁÆ®·Ñ·¯ ¼³Á¤
+	AIControllerClass = ABearAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	// Æù¼¾½Ì
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SightRadius = 500.f;
+	PawnSensing->SetPeripheralVisionAngle(45.f); //ÁÂ¿ì 45µµ == ÃÑ 90µµ
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +55,11 @@ void ABear::BeginPlay()
 void ABear::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	PawnSensing->OnSeePawn.AddDynamic(this, &ABear::SetTarget);
+
+	AnimInstance = Cast<UAnimInstanceBear>(GetMesh()->GetAnimInstance());
+	AnimInstance->OnMontageEnded.AddDynamic(this, &ABear::OnAttackMontageEnded);
 }
 
 float ABear::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -71,3 +88,20 @@ void ABear::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void ABear::SetTarget(APawn* Pawn)
+{
+	if (!TargetPawn)
+	{
+		TargetPawn = Pawn;
+		auto AIController = Cast<ABearAIController>(GetController());
+		if (AIController)
+		{
+			AIController->SetTarget(Pawn);
+		}
+	}
+}
+
+void ABear::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	
+}
