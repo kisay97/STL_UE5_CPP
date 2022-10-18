@@ -124,6 +124,7 @@ void ABear::SetTarget(APawn* Pawn)
 void ABear::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
+	OnAttackEnded.Broadcast();
 }
 
 void ABear::Attack()

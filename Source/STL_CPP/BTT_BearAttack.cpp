@@ -8,7 +8,7 @@
 UBTT_BearAttack::UBTT_BearAttack()
 {
 	NodeName = (TEXT("BEAR Attack"));
-	bNotifyTick = true;
+	//bNotifyTick = true;
 }
 
 EBTNodeResult::Type UBTT_BearAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -23,6 +23,9 @@ EBTNodeResult::Type UBTT_BearAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	if (ControlledBear)
 	{
 		ControlledBear->Attack();
+		ControlledBear->OnAttackEnded.AddLambda([&]() {
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		});
 		return EBTNodeResult::InProgress;
 	}
 	return EBTNodeResult::Failed;
@@ -31,9 +34,9 @@ EBTNodeResult::Type UBTT_BearAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 void UBTT_BearAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-	auto ControlledBear = Cast<ABear>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!ControlledBear->IsAttacking)
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //latent : 숨어있는. 마지막 태스크를 피니시 시킨다.
-	}
+	//auto ControlledBear = Cast<ABear>(OwnerComp.GetAIOwner()->GetPawn());
+	//if (!ControlledBear->IsAttacking)
+	//{
+	//	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //latent : 숨어있는. 마지막 태스크를 피니시 시킨다.
+	//}
 }
