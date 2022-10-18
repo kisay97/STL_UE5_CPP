@@ -60,6 +60,9 @@ ABear::ABear()
 	{
 		Attack3 = AM_Attack3.Object;
 	}
+
+	// 공격중 변수 초기화
+	IsAttacking = false;
 }
 
 // Called when the game starts or when spawned
@@ -120,9 +123,30 @@ void ABear::SetTarget(APawn* Pawn)
 
 void ABear::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	
+	IsAttacking = false;
 }
 
 void ABear::Attack()
 {
+	if (!AnimInstance->IsAnyMontagePlaying()) //공격이 실행중(공격 애님몽타주 재생중)일 때 또 공격을 하려고 하면 이전 공격이 중단되면서 이상해지는걸 방지
+	{
+		IsAttacking = true;
+
+		int attackType = FMath::RandRange(1, 3);
+		switch (attackType)
+		{
+		case 1:
+			AnimInstance->Montage_Play(Attack1);
+			break;
+		case 2:
+			AnimInstance->Montage_Play(Attack2);
+			break;
+		case 3:
+			AnimInstance->Montage_Play(Attack3);
+			break;
+		default:
+			AnimInstance->Montage_Play(Attack1);
+			break;
+		}
+	}
 }

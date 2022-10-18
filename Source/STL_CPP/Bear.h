@@ -46,6 +46,9 @@ public:
 	float MaxHP;
 
 	UPROPERTY()
+	bool IsAttacking;
+
+	UPROPERTY()
 	UAnimMontage* Attack1;
 
 	UPROPERTY()
