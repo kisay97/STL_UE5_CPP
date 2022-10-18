@@ -40,6 +40,9 @@ public:
 	UFUNCTION()
 	void Attack();
 
+	UFUNCTION()
+	void Die();
+
 	UPROPERTY(VisibleAnywhere)
 	float CurrentHP;
 

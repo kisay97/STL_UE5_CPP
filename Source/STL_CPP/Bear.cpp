@@ -5,6 +5,7 @@
 #include "AnimInstanceBear.h"
 #include "BearAIController.h"
 #include "Perception/PawnSensingComponent.h"
+#include "BrainComponent.h"
 
 // Sets default values
 ABear::ABear()
@@ -87,9 +88,7 @@ float ABear::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControll
 	CurrentHP = FMath::Clamp(CurrentHP - Damage, 0.f, MaxHP);
 	if (CurrentHP <= 0)
 	{
-		// TODO: 죽는 애니메이션 재생, 콜리전 끄기, 애니메이션 재생 끝나고 죽게하기
-		OnBearDied.Broadcast();
-		Destroy();
+		Die();
 	}
 
 	return 0.0f;
@@ -150,4 +149,35 @@ void ABear::Attack()
 			break;
 		}
 	}
+}
+
+void ABear::Die()
+{
+	// TODO: 죽는 애니메이션 재생, 콜리전 끄기, 애니메이션 재생 끝나고 죽게하기
+	// 콜리전 끄기
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+	// 움직이지 말라고 무브먼트 멈추기
+	GetCharacterMovement()->StopMovementImmediately();
+
+	// 때리고 죽지 말라고(몽타주 재생중이면 멈추고 바로 죽도록)
+	AnimInstance->StopAllMontages(0.f);
+
+	// 죽었다고 알리기(스포너 등)
+	OnBearDied.Broadcast();
+
+	// 비헤이비어 트리 멈추기
+	auto aiController = Cast<ABearAIController>(GetController());
+	if (aiController) {
+		aiController->BrainComponent->StopLogic(TEXT("Death"));
+	}
+
+	// 데스 애니메이션 재생하는거 때문에 3초정도 기다렸다가 Destroy 함.
+	FTimerHandle DestroyHandle;
+	float Delaytime = 3.f;
+	GetWorld()->GetTimerManager().SetTimer(DestroyHandle, FTimerDelegate::CreateLambda([&]() {
+		Destroy();
+	}), Delaytime, false);
+
 }

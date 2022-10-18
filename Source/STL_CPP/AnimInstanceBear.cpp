@@ -2,6 +2,7 @@
 
 
 #include "AnimInstanceBear.h"
+#include "Bear.h"
 
 UAnimInstanceBear::UAnimInstanceBear()
 {
@@ -13,10 +14,11 @@ void UAnimInstanceBear::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	auto Pawn = TryGetPawnOwner();
+	auto Pawn = Cast<ABear>(TryGetPawnOwner());
 	if (::IsValid(Pawn))
 	{
 		PawnSpeed = Pawn->GetVelocity().Size();
+		(Pawn->CurrentHP <= 0) ? IsDead = true : IsDead = false;
 	}
 }
 

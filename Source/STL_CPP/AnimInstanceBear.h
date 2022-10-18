@@ -23,6 +23,8 @@ public:
 	void AnimNotify_Attack();
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true)) //private지만 블프에서 접근은 가능하게 하는거인듯.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true)) // AllowPrivateAccess = true : private지만 블프에서 접근은 가능하게 하는거인듯.
 	float PawnSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool IsDead;
 };
