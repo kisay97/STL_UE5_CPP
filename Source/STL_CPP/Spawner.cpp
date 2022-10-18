@@ -24,7 +24,7 @@ ASpawner::ASpawner()
 void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &ASpawner::SpawnEnemy, 5.0f, true);
 }
 
 void ASpawner::PostInitializeComponents()
@@ -37,10 +37,10 @@ void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ElapsedTime += DeltaTime;
-	if (ElapsedTime >= 5) {
-		SpawnEnemy();
-	}
+	//ElapsedTime += DeltaTime;
+	//if (ElapsedTime >= 5) {
+	//	SpawnEnemy();
+	//}
 }
 
 void ASpawner::SpawnEnemy()
@@ -51,6 +51,9 @@ void ASpawner::SpawnEnemy()
 		auto SpawnedEnemy = GetWorld()->SpawnActor<ABear>(SpawnClass, FTransform(RandomLocation));
 		if (SpawnedEnemy)
 		{
+			SpawnedEnemy->OnBearDied.AddLambda([this]()->void {
+				SpawnCount--;
+			});
 			SpawnCount++;
 			ElapsedTime = 0.f;
 		}

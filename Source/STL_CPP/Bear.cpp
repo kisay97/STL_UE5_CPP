@@ -88,6 +88,7 @@ float ABear::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControll
 	if (CurrentHP <= 0)
 	{
 		// TODO: 죽는 애니메이션 재생, 콜리전 끄기, 애니메이션 재생 끝나고 죽게하기
+		OnBearDied.Broadcast();
 		Destroy();
 	}
 

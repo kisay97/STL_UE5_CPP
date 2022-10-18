@@ -3,6 +3,7 @@ DerivedDataCache
 Intermediate
 Saved
 enc_temp_folder
+Content/__ExternalActors__
 .vscode
 .vs
 *.VC.db

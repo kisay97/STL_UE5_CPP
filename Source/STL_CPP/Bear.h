@@ -7,6 +7,7 @@
 #include "Bear.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndedDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnBearDiedDelegate);
 
 UCLASS()
 class STL_CPP_API ABear : public ACharacter
@@ -58,6 +59,7 @@ public:
 	UAnimMontage* Attack3;
 
 	FOnAttackEndedDelegate OnAttackEnded;
+	FOnBearDiedDelegate OnBearDied;
 
 public:
 	UPROPERTY()
