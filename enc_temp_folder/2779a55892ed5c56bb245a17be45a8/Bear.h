@@ -36,23 +36,11 @@ public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-	UFUNCTION()
-	void Attack();
-
 	UPROPERTY(VisibleAnywhere)
 	float CurrentHP;
 
 	UPROPERTY(VisibleAnywhere)
 	float MaxHP;
-
-	UPROPERTY()
-	UAnimMontage* Attack1;
-
-	UPROPERTY()
-	UAnimMontage* Attack2;
-
-	UPROPERTY()
-	UAnimMontage* Attack3;
 
 	FOnAttackEndedDelegate OnAttackEnded;
 

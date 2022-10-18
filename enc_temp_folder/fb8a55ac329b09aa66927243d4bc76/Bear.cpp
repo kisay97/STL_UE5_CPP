@@ -43,23 +43,6 @@ ABear::ABear()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 500.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f); //ÁÂ¿ì 45µµ == ÃÑ 90µµ
-
-	// Attack Montage ¼¼ÆÃ
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM_Attack1(TEXT("AnimMontage'/Game/Bear/AM_Attack1.AM_Attack1'"));
-	if (AM_Attack1.Succeeded())
-	{
-		Attack1 = AM_Attack1.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM_Attack2(TEXT("AnimMontage'/Game/Bear/AM_Attack2.AM_Attack2'"));
-	if (AM_Attack2.Succeeded())
-	{
-		Attack2 = AM_Attack2.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM_Attack3(TEXT("AnimMontage'/Game/Bear/AM_Attack3.AM_Attack3'"));
-	if (AM_Attack3.Succeeded())
-	{
-		Attack3 = AM_Attack3.Object;
-	}
 }
 
 // Called when the game starts or when spawned
@@ -121,8 +104,4 @@ void ABear::SetTarget(APawn* Pawn)
 void ABear::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	
-}
-
-void ABear::Attack()
-{
 }
