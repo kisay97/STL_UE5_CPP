@@ -29,5 +29,11 @@ void UAnimInstanceBear::PlayAttackMontage()
 
 void UAnimInstanceBear::AnimNotify_Attack()
 {
-	// TODO AttackMontage
+	UE_LOG(LogTemp, Log, TEXT("UAnimInstanceBear::AnimNotify_Attack"));
+	//OnAttackCheck.Broadcast();
+	auto bear = Cast<ABear>(GetOwningActor());
+	if (bear)
+	{
+		bear->CheckAttackedCharacter();
+	}
 }

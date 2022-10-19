@@ -6,6 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "AnimInstanceBear.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackCheckDelegate);
+
 /**
  * 
  */
@@ -21,6 +23,8 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_Attack();
+
+	FOnAttackCheckDelegate OnAttackCheck;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true)) // AllowPrivateAccess = true : private지만 블프에서 접근은 가능하게 하는거인듯.

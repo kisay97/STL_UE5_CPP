@@ -64,6 +64,8 @@ ABear::ABear()
 
 	// 공격중 변수 초기화
 	IsAttacking = false;
+
+	AttackDamage = 30.f;
 }
 
 // Called when the game starts or when spawned
@@ -81,6 +83,7 @@ void ABear::PostInitializeComponents()
 
 	AnimInstance = Cast<UAnimInstanceBear>(GetMesh()->GetAnimInstance());
 	AnimInstance->OnMontageEnded.AddDynamic(this, &ABear::OnAttackMontageEnded);
+	//AnimInstance->OnAttackCheck.AddUFunction(this, &ABear::CheckAttackedCharacter);
 }
 
 float ABear::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -127,7 +130,7 @@ void ABear::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	OnAttackEnded.Broadcast();
 }
 
-void ABear::Attack()
+void ABear::PlayAttackMontage()
 {
 	if (!AnimInstance->IsAnyMontagePlaying()) //공격이 실행중(공격 애님몽타주 재생중)일 때 또 공격을 하려고 하면 이전 공격이 중단되면서 이상해지는걸 방지
 	{
@@ -181,4 +184,30 @@ void ABear::Die()
 		Destroy();
 	}), Delaytime, false);
 
+}
+
+void ABear::CheckAttackedCharacter() 
+{
+	auto nowPlayMontage = AnimInstance->GetCurrentActiveMontage();
+	FVector attackSocketLoc;
+	if (nowPlayMontage == Attack1) attackSocketLoc = GetMesh()->GetSocketLocation(FName(TEXT("Attack_rt")));
+	else if (nowPlayMontage == Attack2) attackSocketLoc = GetMesh()->GetSocketLocation(FName(TEXT("Attack_lt")));
+	else if (nowPlayMontage == Attack3) attackSocketLoc = GetMesh()->GetSocketLocation(FName(TEXT("Attack_ct")));
+	TArray<FHitResult> results;
+	bool bIsAnyHitted = UKismetSystemLibrary::SphereTraceMulti(GetWorld(),
+		attackSocketLoc, attackSocketLoc, 80.f,
+		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel2),
+		false, TArray<AActor*>(), EDrawDebugTrace::ForDuration, results, true);
+
+	if (bIsAnyHitted)
+	{
+		for (const auto& result : results) 
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f,
+				FColor::Cyan,
+				FString::Printf(TEXT("Hit: %s"), *result.GetActor()->GetName()));
+			auto hitActor = result.GetActor();
+			UGameplayStatics::ApplyDamage(hitActor, AttackDamage, GetController(), this, nullptr);
+		}
+	}
 }

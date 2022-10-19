@@ -22,7 +22,7 @@ EBTNodeResult::Type UBTT_BearAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	auto ControlledBear = Cast<ABear>(OwnerComp.GetAIOwner()->GetPawn());
 	if (ControlledBear)
 	{
-		ControlledBear->Attack();
+		ControlledBear->PlayAttackMontage();
 		ControlledBear->OnAttackEnded.AddLambda([&]() {
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		});

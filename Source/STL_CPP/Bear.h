@@ -38,10 +38,12 @@ public:
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	UFUNCTION()
-	void Attack();
+	void PlayAttackMontage();
 
 	UFUNCTION()
 	void Die();
+
+	void CheckAttackedCharacter();
 
 	UPROPERTY(VisibleAnywhere)
 	float CurrentHP;
@@ -51,6 +53,9 @@ public:
 
 	UPROPERTY()
 	bool IsAttacking;
+
+	UPROPERTY()
+	float AttackDamage;
 
 	UPROPERTY()
 	UAnimMontage* Attack1;
