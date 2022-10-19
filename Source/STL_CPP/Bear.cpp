@@ -193,21 +193,26 @@ void ABear::CheckAttackedCharacter()
 	if (nowPlayMontage == Attack1) attackSocketLoc = GetMesh()->GetSocketLocation(FName(TEXT("Attack_rt")));
 	else if (nowPlayMontage == Attack2) attackSocketLoc = GetMesh()->GetSocketLocation(FName(TEXT("Attack_lt")));
 	else if (nowPlayMontage == Attack3) attackSocketLoc = GetMesh()->GetSocketLocation(FName(TEXT("Attack_ct")));
-	TArray<FHitResult> results;
-	bool bIsAnyHitted = UKismetSystemLibrary::SphereTraceMulti(GetWorld(),
-		attackSocketLoc, attackSocketLoc, 80.f,
-		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel2),
-		false, TArray<AActor*>(), EDrawDebugTrace::ForDuration, results, true);
+	float attackRadius = 80.f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectType;
+	TraceObjectType.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
+	TArray<AActor*> hittedActors;
+
+	bool bIsAnyHitted = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), attackSocketLoc, attackRadius, TraceObjectType, nullptr, TArray<AActor*>(), hittedActors);
 
 	if (bIsAnyHitted)
 	{
-		for (const auto& result : results) 
+		DrawDebugSphere(GetWorld(), attackSocketLoc, attackRadius, 12, FColor::Green, true, 2.f);
+		for (const auto& hitActor : hittedActors)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.f,
 				FColor::Cyan,
-				FString::Printf(TEXT("Hit: %s"), *result.GetActor()->GetName()));
-			auto hitActor = result.GetActor();
+				FString::Printf(TEXT("Hit: %s"), *hitActor->GetName()));
 			UGameplayStatics::ApplyDamage(hitActor, AttackDamage, GetController(), this, nullptr);
 		}
+	}
+	else
+	{
+		DrawDebugSphere(GetWorld(), attackSocketLoc, attackRadius, 12, FColor::Red, true, 2.f);
 	}
 }
