@@ -50,6 +50,9 @@ void USTLCharacterStatComponent::SetCurrentHpByDamage(float NewDamage)
 	if (CurrentHP <= 0)
 	{
 		//TODO:죽을때 애니메이션
+		GEngine->AddOnScreenDebugMessage(-1, 2.f,
+			FColor::Cyan,
+			FString::Printf(TEXT("Die.")));
 	}
 }
 

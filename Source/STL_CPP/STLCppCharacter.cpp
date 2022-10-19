@@ -105,6 +105,13 @@ void ASTLCppCharacter::BeginPlay()
 	
 }
 
+float ASTLCppCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	CharacterStat->SetCurrentHpByDamage(Damage);
+
+	return 0.0f;
+}
+
 // Called every frame
 void ASTLCppCharacter::Tick(float DeltaTime)
 {
